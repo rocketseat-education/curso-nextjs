@@ -8,12 +8,8 @@ export default function SearchForm() {
   function handleSearch(e: FormEvent) {
     e.preventDefault();
 
-    // const isSearchPage = router.pathname === '/search';
-
     router.push(
       `/search?q=${encodeURIComponent(search)}`, 
-      // undefined, 
-      // { shallow: false }
     );
 
     setSearch('');

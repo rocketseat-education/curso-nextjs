@@ -1,3 +1,4 @@
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import Head from 'next/head'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react';
@@ -18,20 +19,19 @@ interface IProduct {
   slug: string
 }
 
-export default function Home() {
+interface HomeServerSideProps {
+  recommendedProducts: IProduct[];
+}
+
+type HomeProps = InferGetServerSidePropsType<typeof getServerSideProps>;
+  
+export default function Home({ recommendedProducts }: HomeProps) {
   const [categories, setCategories] = useState<ICategory[]>([]);
-  const [recommendedProducts, setRecommendedProducts] = useState<IProduct[]>([]);
   
   useEffect(() => {
     fetch('http://localhost:3333/categories').then(response => {
       response.json().then(data => {
         setCategories(data)
-      })
-    })
-
-    fetch('http://localhost:3333/recommended').then(response => {
-      response.json().then(data => {
-        setRecommendedProducts(data)
       })
     })
   }, []);
@@ -70,4 +70,17 @@ export default function Home() {
       </section>
     </div>
   )
+}
+
+
+
+export const getServerSideProps: GetServerSideProps<HomeServerSideProps> = async (context) => {
+  const response = await fetch('http://localhost:3333/recommended')
+  const recommendedProducts: IProduct[] = await response.json();
+
+  return {
+    props: {
+      recommendedProducts
+    }
+  }
 }
