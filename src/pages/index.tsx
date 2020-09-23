@@ -1,8 +1,10 @@
 import Head from 'next/head'
 import Link from 'next/link'
+import React from 'react';
 
 import SearchForm from '../components/SearchForm';
-import styles from '../styles/Home.module.css';
+
+import { SectionTitle } from '../styles/pages/Home';
 
 export default function Home() {
   return (
@@ -13,8 +15,8 @@ export default function Home() {
 
       <SearchForm />
 
-      <div className={styles.container}>
-        <h1>Produtos recomendados</h1>
+      <section>
+        <SectionTitle>Produtos recomendados</SectionTitle>
         <ul>
           <li>
             <Link href="/catalog/products/product-one">
@@ -32,7 +34,7 @@ export default function Home() {
             </Link>
           </li>
         </ul>
-      </div>
+      </section>
     </div>
   )
 }
