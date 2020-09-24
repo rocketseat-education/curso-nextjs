@@ -18,7 +18,7 @@ export default function Home({ recommendedProducts }: HomeProps) {
   const [categories, setCategories] = useState<ICategory[]>([]);
   
   useEffect(() => {
-    fetch('http://localhost:3333/categories').then(response => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`).then(response => {
       response.json().then(data => {
         setCategories(data)
       })
@@ -48,7 +48,7 @@ export default function Home({ recommendedProducts }: HomeProps) {
         <ul>
           {recommendedProducts.map(product => {
             return (
-              <li>
+              <li key={product.id}>
                 <Link href={`/catalog/products/${product.id}`}>
                   <a>{product.title}</a>
                 </Link>
@@ -62,7 +62,7 @@ export default function Home({ recommendedProducts }: HomeProps) {
 }
 
 export const getServerSideProps: GetServerSideProps<HomeServerSideProps> = async (context) => {
-  const response = await fetch('http://localhost:3333/recommended')
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/recommended`)
   const recommendedProducts: IProduct[] = await response.json();
 
   return {

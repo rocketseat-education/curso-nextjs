@@ -58,7 +58,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps<ProductStaticProps> = async (context) => {
   const { slug } = context.params;
 
-  const response = await fetch(`http://localhost:3333/products/${slug}`);
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/${slug}`);
   const product = await response.json();
 
   return {

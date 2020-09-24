@@ -43,7 +43,7 @@ export default function Search({ searchResults }: InferGetServerSidePropsType<ty
 export const getServerSideProps: GetServerSideProps<ServerSideProps> = async (context) => {
   const { q } = context.query;
 
-  const response = await fetch(`http://localhost:3333/products?q=${q}`)
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products?q=${q}`)
   const searchResults: IProduct[] = await response.json();
 
   return {
