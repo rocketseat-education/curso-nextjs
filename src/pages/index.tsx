@@ -6,18 +6,7 @@ import React, { useEffect, useState } from 'react';
 import SearchForm from '../components/SearchForm';
 
 import { SectionTitle } from '../styles/pages/Home';
-
-interface ICategory {
-  id: number
-  title: string
-}
-
-interface IProduct {
-  id: number
-  price: string
-  title: string
-  slug: string
-}
+import { ICategory, IProduct } from './types';
 
 interface HomeServerSideProps {
   recommendedProducts: IProduct[];
@@ -60,7 +49,7 @@ export default function Home({ recommendedProducts }: HomeProps) {
           {recommendedProducts.map(product => {
             return (
               <li>
-                <Link href={`/catalog/products/${product.slug}`}>
+                <Link href={`/catalog/products/${product.id}`}>
                   <a>{product.title}</a>
                 </Link>
               </li>

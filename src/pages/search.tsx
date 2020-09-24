@@ -3,13 +3,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import SearchForm from "../components/SearchForm";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
-
-interface IProduct {
-  id: number
-  price: string
-  title: string
-  slug: string
-}
+import { IProduct } from "./types";
 
 type ServerSideProps = {
   searchResults: IProduct[]
@@ -34,7 +28,7 @@ export default function Search({ searchResults }: InferGetServerSidePropsType<ty
           {searchResults.map(product => {
             return (
               <li>
-                <Link href={`/catalog/products/${product.slug}`}>
+                <Link href={`/catalog/products/${product.id}`}>
                   <a>{product.title}</a>
                 </Link>
               </li>

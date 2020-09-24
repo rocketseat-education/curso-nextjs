@@ -2,18 +2,7 @@ import Link from 'next/link';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
-
-interface ICategory {
-  id: string
-  title: string
-}
-
-interface IProduct {
-  id: number
-  price: string
-  title: string
-  slug: string
-}
+import { ICategory, IProduct } from '../../types';
 
 interface CategoryStaticProps {
   products: IProduct[];
@@ -43,7 +32,7 @@ export default function Category({ products }: CategoryProps) {
           {products.map(product => {
             return (
               <li key={product.id}>
-                <Link href={`/catalog/products/${product.slug}`}>
+                <Link href={`/catalog/products/${product.id}`}>
                   <a>{product.title}</a>
                 </Link>
               </li>
@@ -67,7 +56,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
   return {
     paths,
-    fallback: false,
+    fallback: true,
   }
 }
 
@@ -80,6 +69,7 @@ export const getStaticProps: GetStaticProps<CategoryStaticProps> = async (contex
   return {
     props: {
       products,
-    }
+    },
+    revalidate: 60,
   }
 }
