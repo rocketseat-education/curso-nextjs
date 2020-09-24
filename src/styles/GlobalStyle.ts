@@ -5,7 +5,7 @@ export default createGlobalStyle`
     margin: 0;
     background: #121214;
     color: #fff;
-    font: 16px Helvetica, Arial, sans-serif;
+    font: 16px Roboto, Helvetica, Arial, sans-serif;
   }
 
   a {
