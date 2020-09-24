@@ -3,9 +3,9 @@ import Head from 'next/head'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react';
 
-import SearchForm from '../components/SearchForm';
+import SearchForm from '@/components/SearchForm';
+import { SectionTitle } from '@/styles/pages/Home';
 
-import { SectionTitle } from '../styles/pages/Home';
 import { ICategory, IProduct } from './types';
 
 interface HomeServerSideProps {

@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
-import { IProduct } from '../../types';
+import { IProduct } from '@/pages/types';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
@@ -12,7 +12,7 @@ type ProductStaticProps = {
 
 interface ProductProps extends InferGetStaticPropsType<typeof getStaticProps> {}
 
-const AddToCartModal = dynamic(() => import('../../../components/AddToCartModal'), {
+const AddToCartModal = dynamic(() => import('@/components/AddToCartModal'), {
   loading: () => (
     <p>Carregando...</p>
   ),

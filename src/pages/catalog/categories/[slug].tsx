@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
-import { ICategory, IProduct } from '../../types';
+import { ICategory, IProduct } from '@/pages/types';
 
 interface CategoryStaticProps {
   products: IProduct[];

@@ -1,8 +1,8 @@
 import { useRouter } from "next/router";
 import Head from 'next/head';
 import Link from 'next/link';
-import SearchForm from "../components/SearchForm";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import SearchForm from "@/components/SearchForm";
 import { IProduct } from "./types";
 
 type ServerSideProps = {
