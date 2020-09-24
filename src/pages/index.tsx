@@ -72,8 +72,6 @@ export default function Home({ recommendedProducts }: HomeProps) {
   )
 }
 
-
-
 export const getServerSideProps: GetServerSideProps<HomeServerSideProps> = async (context) => {
   const response = await fetch('http://localhost:3333/recommended')
   const recommendedProducts: IProduct[] = await response.json();

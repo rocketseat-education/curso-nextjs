@@ -1,7 +1,12 @@
 import Link from 'next/link';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
+
+interface ICategory {
+  id: string
+  title: string
+}
 
 interface IProduct {
   id: number
@@ -10,23 +15,16 @@ interface IProduct {
   slug: string
 }
 
-export default function Category() {
+interface CategoryStaticProps {
+  products: IProduct[];
+}
+
+type CategoryProps = InferGetStaticPropsType<typeof getStaticProps>;
+
+export default function Category({ products }: CategoryProps) {
   const router = useRouter();
-  const [products, setProducts] = useState<IProduct[]>([]);
 
   const { slug } = router.query;
-
-  useEffect(() => {
-    if (!slug) {
-      return;
-    }
-
-    fetch(`http://localhost:3333/products?category_id=${slug}`).then(response => {
-      response.json().then(data => {
-        setProducts(data)
-      })
-    })
-  }, [slug])
 
   return (
     <div>
@@ -44,7 +42,7 @@ export default function Category() {
         <ul>
           {products.map(product => {
             return (
-              <li>
+              <li key={product.id}>
                 <Link href={`/catalog/products/${product.slug}`}>
                   <a>{product.title}</a>
                 </Link>
@@ -55,4 +53,33 @@ export default function Category() {
       </section>
     </div>
   );
+}
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const response = await fetch(`http://localhost:3333/categories`);
+  const categories: ICategory[] = await response.json();
+
+  const paths = categories.map(category => {
+    return {
+      params: { slug: category.id },
+    };
+  })
+
+  return {
+    paths,
+    fallback: false,
+  }
+}
+
+export const getStaticProps: GetStaticProps<CategoryStaticProps> = async (context) => {
+  const { slug } = context.params;
+
+  const response = await fetch(`http://localhost:3333/products?category_id=${slug}`);
+  const products = await response.json();
+
+  return {
+    props: {
+      products,
+    }
+  }
 }
