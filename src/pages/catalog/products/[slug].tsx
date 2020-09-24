@@ -1,10 +1,10 @@
 import Link from 'next/link';
-import Head from 'next/head';
 import dynamic from 'next/dynamic';
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
 import { IProduct } from '@/pages/types';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
+import SEO from '@/components/SEO';
 
 type ProductStaticProps = {
   product: IProduct;
@@ -28,9 +28,7 @@ export default function Product({ product }: ProductProps) {
 
   return (
     <div>
-      <Head>
-        <title>Product "{product.id}" | DevCommerce</title>
-      </Head>
+      <SEO title={product.title} />
 
       <Link href="/">
         <a>Back to home</a>

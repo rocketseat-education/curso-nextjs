@@ -1,8 +1,8 @@
 import { useRouter } from "next/router";
-import Head from 'next/head';
 import Link from 'next/link';
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import SearchForm from "@/components/SearchForm";
+import SEO from "@/components/SEO";
 import { IProduct } from "./types";
 
 type ServerSideProps = {
@@ -16,9 +16,7 @@ export default function Search({ searchResults }: InferGetServerSidePropsType<ty
 
   return (
     <div>
-      <Head>
-        <title>Searching for: {q} | DevCommerce</title>
-      </Head>
+      <SEO title={`Results for: ${q}`} />
 
       <SearchForm />
 

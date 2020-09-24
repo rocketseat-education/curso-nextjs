@@ -3,23 +3,23 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
 import { ICategory, IProduct } from '@/pages/types';
+import SEO from '@/components/SEO';
 
 interface CategoryStaticProps {
+  category: ICategory;
   products: IProduct[];
 }
 
 type CategoryProps = InferGetStaticPropsType<typeof getStaticProps>;
 
-export default function Category({ products }: CategoryProps) {
+export default function Category({ products, category }: CategoryProps) {
   const router = useRouter();
 
   const { slug } = router.query;
 
   return (
     <div>
-      <Head>
-        <title>Category "{slug}" | DevCommerce</title>
-      </Head>
+      <SEO title={category.title} />
 
       <Link href="/">
         <a>Back to home</a>
@@ -63,11 +63,15 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps<CategoryStaticProps> = async (context) => {
   const { slug } = context.params;
 
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products?category_id=${slug}`);
-  const products = await response.json();
+  const categoryResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories/${slug}`);
+  const category = await categoryResponse.json();
+
+  const productsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products?category_id=${slug}`);
+  const products = await productsResponse.json();
 
   return {
     props: {
+      category,
       products,
     },
     revalidate: 60,

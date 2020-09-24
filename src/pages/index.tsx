@@ -1,9 +1,9 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
-import Head from 'next/head'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react';
 
 import SearchForm from '@/components/SearchForm';
+import SEO from '@/components/SEO';
 import { SectionTitle } from '@/styles/pages/Home';
 
 import { ICategory, IProduct } from './types';
@@ -27,9 +27,7 @@ export default function Home({ recommendedProducts }: HomeProps) {
 
   return (
     <div>
-      <Head>
-        <title>DevCommerce</title>
-      </Head>
+      <SEO title="Home" />
 
       <SearchForm />
 
