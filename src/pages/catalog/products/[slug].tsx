@@ -1,8 +1,10 @@
 import Link from 'next/link';
 import Head from 'next/head';
+import dynamic from 'next/dynamic';
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
 import { IProduct } from '../../types';
 import { useRouter } from 'next/router';
+import { useState } from 'react';
 
 type ProductStaticProps = {
   product: IProduct;
@@ -10,7 +12,14 @@ type ProductStaticProps = {
 
 interface ProductProps extends InferGetStaticPropsType<typeof getStaticProps> {}
 
+const AddToCartModal = dynamic(() => import('../../../components/AddToCartModal'), {
+  loading: () => (
+    <p>Carregando...</p>
+  ),
+});
+
 export default function Product({ product }: ProductProps) {
+  const [isAddToCartModalOpen, setIsAddToCartModalOpen] = useState(false);
   const router = useRouter();
 
   if (router.isFallback) {
@@ -29,6 +38,12 @@ export default function Product({ product }: ProductProps) {
       
       <h1>Product: {product.title}</h1>
       <h2>Price: {product.price}</h2>
+
+      { isAddToCartModalOpen && <AddToCartModal title={product.title} /> }
+
+      <button onClick={() => setIsAddToCartModalOpen(true)}>
+        Add to cart
+      </button>
     </div>
   );
 }
