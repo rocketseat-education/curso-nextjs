@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import SearchForm from "@/components/SearchForm";
 import SEO from "@/components/SEO";
-import { IProduct } from "./types";
 import { client } from "@/lib/prismic";
 import Prismic from 'prismic-javascript';
 import { Document } from 'prismic-javascript/types/documents';

@@ -1,10 +1,10 @@
 import Link from 'next/link';
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
-import { ICategory, IProduct } from '@/pages/types';
 import SEO from '@/components/SEO';
 import { client } from '@/lib/prismic';
 import Prismic from 'prismic-javascript';
 import { Document } from 'prismic-javascript/types/documents';
+import { useRouter } from 'next/router';
 
 interface CategoryStaticProps {
   category: Document;
@@ -14,6 +14,12 @@ interface CategoryStaticProps {
 type CategoryProps = InferGetStaticPropsType<typeof getStaticProps>;
 
 export default function Category({ products, category }: CategoryProps) {
+  const router = useRouter();
+
+  if (router.isFallback) {
+    return <p>Loading...</p>
+  }
+
   return (
     <div>
       <SEO title={category.data.title} />
@@ -42,12 +48,13 @@ export default function Category({ products, category }: CategoryProps) {
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`);
-  const categories: ICategory[] = await response.json();
+  const categories = await client().query([
+    Prismic.Predicates.at('document.type', 'category'),
+  ])
 
-  const paths = categories.map(category => {
+  const paths = categories.results.map(category => {
     return {
-      params: { slug: category.id },
+      params: { slug: category.uid },
     };
   })
 
