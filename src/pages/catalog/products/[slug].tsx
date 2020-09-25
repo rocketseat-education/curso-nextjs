@@ -1,13 +1,15 @@
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
-import { IProduct } from '@/pages/types';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import SEO from '@/components/SEO';
+import { client } from '@/lib/prismic';
+import { RichText } from 'prismic-dom'
+import { Document } from 'prismic-javascript/types/documents';
 
 type ProductStaticProps = {
-  product: IProduct;
+  product: Document;
 }
 
 interface ProductProps extends InferGetStaticPropsType<typeof getStaticProps> {}
@@ -26,18 +28,24 @@ export default function Product({ product }: ProductProps) {
     return <div>Loading...</div>
   }
 
+  const productDescription = useMemo(() => {
+    return RichText.asHtml(product.data.description);
+  }, [product.data.description])
+
   return (
     <div>
-      <SEO title={product.title} />
+      <SEO title={product.data.title} />
 
       <Link href="/">
         <a>Back to home</a>
       </Link>
       
-      <h1>Product: {product.title}</h1>
-      <h2>Price: {product.price}</h2>
+      <h1>Product: {product.data.title}</h1>
+      <h2>Price: {product.data.price}</h2>
 
-      { isAddToCartModalOpen && <AddToCartModal title={product.title} /> }
+      <div dangerouslySetInnerHTML={{ __html: productDescription }}></div>
+
+      { isAddToCartModalOpen && <AddToCartModal title={product.data.title} /> }
 
       <button onClick={() => setIsAddToCartModalOpen(true)}>
         Add to cart
@@ -56,8 +64,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps<ProductStaticProps> = async (context) => {
   const { slug } = context.params;
 
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products/${slug}`);
-  const product = await response.json();
+  const product = await client().getByUID('product', String(slug), {});
 
   return {
     props: {

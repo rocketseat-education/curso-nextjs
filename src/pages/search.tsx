@@ -4,9 +4,12 @@ import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import SearchForm from "@/components/SearchForm";
 import SEO from "@/components/SEO";
 import { IProduct } from "./types";
+import { client } from "@/lib/prismic";
+import Prismic from 'prismic-javascript';
+import { Document } from 'prismic-javascript/types/documents';
 
 type ServerSideProps = {
-  searchResults: IProduct[]
+  searchResults: Document[];
 }
 
 export default function Search({ searchResults }: InferGetServerSidePropsType<typeof getServerSideProps>) {
@@ -26,8 +29,8 @@ export default function Search({ searchResults }: InferGetServerSidePropsType<ty
           {searchResults.map(product => {
             return (
               <li>
-                <Link href={`/catalog/products/${product.id}`}>
-                  <a>{product.title}</a>
+                <Link href={`/catalog/products/${product.uid}`}>
+                  <a>{product.data.title}</a>
                 </Link>
               </li>
             )
@@ -41,12 +44,14 @@ export default function Search({ searchResults }: InferGetServerSidePropsType<ty
 export const getServerSideProps: GetServerSideProps<ServerSideProps> = async (context) => {
   const { q } = context.query;
 
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products?q=${q}`)
-  const searchResults: IProduct[] = await response.json();
+  const searchResults = await client().query([
+    Prismic.Predicates.at('document.type', 'product'),
+    Prismic.Predicates.fulltext('my.product.title', String(q))
+  ])
 
   return {
     props: {
-      searchResults,
+      searchResults: searchResults.results,
     }
   };
 }

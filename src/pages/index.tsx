@@ -6,22 +6,24 @@ import SearchForm from '@/components/SearchForm';
 import SEO from '@/components/SEO';
 import { SectionTitle } from '@/styles/pages/Home';
 
-import { ICategory, IProduct } from './types';
+import Prismic from 'prismic-javascript';
+import { Document } from 'prismic-javascript/types/documents';
+import { client } from '@/lib/prismic';
 
 interface HomeServerSideProps {
-  recommendedProducts: IProduct[];
+  recommendedProducts: Document[];
 }
 
 type HomeProps = InferGetServerSidePropsType<typeof getServerSideProps>;
   
 export default function Home({ recommendedProducts }: HomeProps) {
-  const [categories, setCategories] = useState<ICategory[]>([]);
+  const [categories, setCategories] = useState<Document[]>([]);
   
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`).then(response => {
-      response.json().then(data => {
-        setCategories(data)
-      })
+    client().query([
+      Prismic.Predicates.at('document.type', 'category')
+    ]).then(categories => {
+      setCategories(categories.results)
     })
   }, []);
 
@@ -34,8 +36,8 @@ export default function Home({ recommendedProducts }: HomeProps) {
       <nav>
         {categories.map(category => {
           return (
-            <Link key={category.id} href={`/catalog/categories/${category.id}`}>
-              <a>{category.title}</a>
+            <Link key={category.id} href={`/catalog/categories/${category.uid}`}>
+              <a>{category.data.title}</a>
             </Link>
           )
         })}
@@ -47,8 +49,8 @@ export default function Home({ recommendedProducts }: HomeProps) {
           {recommendedProducts.map(product => {
             return (
               <li key={product.id}>
-                <Link href={`/catalog/products/${product.id}`}>
-                  <a>{product.title}</a>
+                <Link href={`/catalog/products/${product.uid}`}>
+                  <a>{product.data.title}</a>
                 </Link>
               </li>
             )
@@ -60,12 +62,13 @@ export default function Home({ recommendedProducts }: HomeProps) {
 }
 
 export const getServerSideProps: GetServerSideProps<HomeServerSideProps> = async (context) => {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/recommended`)
-  const recommendedProducts: IProduct[] = await response.json();
+  const recommendedProducts = await client().query([
+    Prismic.Predicates.at('document.type', 'product'),
+  ])
 
   return {
     props: {
-      recommendedProducts
+      recommendedProducts: recommendedProducts.results
     }
   }
 }

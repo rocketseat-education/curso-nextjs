@@ -1,39 +1,36 @@
 import Link from 'next/link';
-import Head from 'next/head';
-import { useRouter } from 'next/router';
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
 import { ICategory, IProduct } from '@/pages/types';
 import SEO from '@/components/SEO';
+import { client } from '@/lib/prismic';
+import Prismic from 'prismic-javascript';
+import { Document } from 'prismic-javascript/types/documents';
 
 interface CategoryStaticProps {
-  category: ICategory;
-  products: IProduct[];
+  category: Document;
+  products: Document[];
 }
 
 type CategoryProps = InferGetStaticPropsType<typeof getStaticProps>;
 
 export default function Category({ products, category }: CategoryProps) {
-  const router = useRouter();
-
-  const { slug } = router.query;
-
   return (
     <div>
-      <SEO title={category.title} />
+      <SEO title={category.data.title} />
 
       <Link href="/">
         <a>Back to home</a>
       </Link>
       
-      <h1>Category: {slug}</h1>
+      <h1>Category: {category.data.title}</h1>
 
       <section>
         <ul>
           {products.map(product => {
             return (
               <li key={product.id}>
-                <Link href={`/catalog/products/${product.id}`}>
-                  <a>{product.title}</a>
+                <Link href={`/catalog/products/${product.uid}`}>
+                  <a>{product.data.title}</a>
                 </Link>
               </li>
             )
@@ -63,16 +60,17 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps<CategoryStaticProps> = async (context) => {
   const { slug } = context.params;
 
-  const categoryResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories/${slug}`);
-  const category = await categoryResponse.json();
+  const category = await client().getByUID('category', String(slug), {});
 
-  const productsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products?category_id=${slug}`);
-  const products = await productsResponse.json();
+  const products = await client().query([
+    Prismic.Predicates.at('document.type', 'product'),
+    Prismic.Predicates.at('my.product.category', category.id)
+  ])
 
   return {
     props: {
       category,
-      products,
+      products: products.results,
     },
     revalidate: 60,
   }
